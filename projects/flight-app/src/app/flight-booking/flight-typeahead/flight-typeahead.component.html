@@ -1,0 +1,16 @@
+<div class="card">
+  <div class="header">
+  <h1 class="title">Typeahead</h1>
+  </div>
+  
+  <div class="content">
+  
+  <div class="control-group">
+    <label>Stadt</label>
+    <input [formControl]="control" class="form-control">
+  </div>
+  
+  <div *ngIf="loading">Loading ...</div>
+  
+  </div>
+</div>

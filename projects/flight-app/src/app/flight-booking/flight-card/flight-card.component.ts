@@ -37,12 +37,12 @@ export class FlightCardComponent implements OnInit, OnChanges, OnDestroy {
 
   select() {
     this.selected = true;
-    this.selectedChange.next(true);
+    this.selectedChange.emit(true);
   }
 
   deselect() {
     this.selected = false;
-    this.selectedChange.next(false);
+    this.selectedChange.emit(false);
   }
 
   blink() {

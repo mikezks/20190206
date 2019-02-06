@@ -1,16 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FlightService} from '@flight-workspace/flight-api';
+import { timer, Subscription, Subject, Observable } from 'rxjs';
+import { take, takeLast, takeUntil, tap, share } from 'rxjs/operators';
 
 @Component({
   selector: 'flight-search',
   templateUrl: './flight-search.component.html',
   styleUrls: ['./flight-search.component.css']
 })
-export class FlightSearchComponent implements OnInit {
+export class FlightSearchComponent implements OnInit, OnDestroy {
 
   from: string = 'Hamburg'; // in Germany
   to: string = 'Graz'; // in Austria
   urgent: boolean = false;
+  subscriptionTimer: Subscription;
+  destroy$ = new Subject<boolean>();
+  timer$: Observable<number>;
 
   get flights() {
     return this.flightService.flights;
@@ -27,6 +32,17 @@ export class FlightSearchComponent implements OnInit {
   }
 
   ngOnInit() {
+    //this.subscriptionTimer 
+    this.timer$ = timer(0, 1000)
+      .pipe(
+        takeUntil(this.destroy$),
+        take(5),
+        tap(value => console.log(value)),
+        //share()
+      );
+        /* .subscribe(timer =>
+            console.log(timer)
+        ); */
   }
 
   search(): void {
@@ -40,4 +56,8 @@ export class FlightSearchComponent implements OnInit {
     this.flightService.delay();
   }
 
+  ngOnDestroy(): void {
+    //this.subscriptionTimer.unsubscribe();
+    this.destroy$.next(true);
+  }
 }
