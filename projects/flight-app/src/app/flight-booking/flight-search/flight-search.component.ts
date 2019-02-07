@@ -1,7 +1,11 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {FlightService} from '@flight-workspace/flight-api';
+import { Flight } from '@flight-workspace/flight-api';
 import { timer, Subscription, Subject, Observable } from 'rxjs';
-import { take, takeLast, takeUntil, tap, share } from 'rxjs/operators';
+import { take, takeUntil, tap, first } from 'rxjs/operators';
+import { FeatureState } from '../+state/reducers/flight-booking.reducer';
+import { Store, select } from '@ngrx/store';
+import { FlightUpdateAction, FlightsLoadAction } from '../+state/actions/flight-booking.actions';
+import { getFlights } from '../+state/selectors/flight-booking.selectors';
 
 @Component({
   selector: 'flight-search',
@@ -16,10 +20,11 @@ export class FlightSearchComponent implements OnInit, OnDestroy {
   subscriptionTimer: Subscription;
   destroy$ = new Subject<boolean>();
   timer$: Observable<number>;
+  flights$: Observable<Flight[]>;
 
-  get flights() {
+  /* get flights() {
     return this.flightService.flights;
-  }
+  } */
 
   // "shopping basket" with selected flights
   basket: object = {
@@ -27,8 +32,7 @@ export class FlightSearchComponent implements OnInit, OnDestroy {
     "5": true
   };
 
-  constructor(
-    private flightService: FlightService) {
+  constructor(private store: Store<FeatureState>) {
   }
 
   ngOnInit() {
@@ -43,17 +47,46 @@ export class FlightSearchComponent implements OnInit, OnDestroy {
         /* .subscribe(timer =>
             console.log(timer)
         ); */
+
+      this.flights$ = this.store.pipe(
+        select(getFlights)
+      );
   }
 
   search(): void {
     if (!this.from || !this.to) return;
 
-    this.flightService
-      .load(this.from, this.to, this.urgent);
+    /* this.flightService
+      .load(this.from, this.to, this.urgent); */
+
+    /* this.flightService
+      .find(this.from, this.to)
+      .subscribe(
+        flights => this.store.dispatch(
+          new FlightsLoadedAction(flights)
+        )
+      ); */
+
+      this.store.dispatch(new FlightsLoadAction(this.from, this.to));
   }
 
   delay(): void {
-    this.flightService.delay();
+    // this.flightService.delay();
+    this.flights$
+      .pipe(first())
+      .subscribe(flights => {
+        const flight = flights[0];
+
+        const oldDate = new Date(flight.date);
+        const newDate = new Date(oldDate.getTime() + 15 * 60 * 1000);
+        const newFlight = {
+          ...flight,
+          date: newDate.toISOString(),
+          delayed: true
+        };
+    
+        this.store.dispatch(new FlightUpdateAction(newFlight));
+      });
   }
 
   ngOnDestroy(): void {

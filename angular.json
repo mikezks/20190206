@@ -160,7 +160,6 @@
             "scripts": [],
             "preserveSymlinks": true,
             "lazyModules": [
-              // "projects/flight-app/src/app/lazy-dashboard-tile/lazy-dashboard-tile.module"
             ]
           },
           "configurations": {
