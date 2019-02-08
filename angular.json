@@ -159,8 +159,7 @@
             ],
             "scripts": [],
             "preserveSymlinks": true,
-            "lazyModules": [
-            ]
+            "lazyModules": []
           },
           "configurations": {
             "production": {
@@ -178,7 +177,9 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
+              "serviceWorker": true,
+              "ngswConfigPath": "projects/flight-app/ngsw-config.json"
             }
           }
         },

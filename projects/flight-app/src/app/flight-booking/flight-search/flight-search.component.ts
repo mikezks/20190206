@@ -6,6 +6,7 @@ import { FeatureState } from '../+state/reducers/flight-booking.reducer';
 import { Store, select } from '@ngrx/store';
 import { FlightUpdateAction, FlightsLoadAction } from '../+state/actions/flight-booking.actions';
 import { getFlights } from '../+state/selectors/flight-booking.selectors';
+import { LocalBasketService } from '../local-basket.service';
 
 @Component({
   selector: 'flight-search',
@@ -29,10 +30,13 @@ export class FlightSearchComponent implements OnInit, OnDestroy {
   // "shopping basket" with selected flights
   basket: object = {
     "3": true,
-    "5": true
+    "5": true,
+    "7": false
   };
 
-  constructor(private store: Store<FeatureState>) {
+  constructor(
+    private store: Store<FeatureState>,
+    private localBasketService: LocalBasketService) {
   }
 
   ngOnInit() {
@@ -87,6 +91,20 @@ export class FlightSearchComponent implements OnInit, OnDestroy {
     
         this.store.dispatch(new FlightUpdateAction(newFlight));
       });
+  }
+
+  saveBasket(): void {
+    this.localBasketService.save(this.basket).then(
+      () => console.log('saved basket'),
+      err => console.error('error on basket save', err)
+    );
+  }
+
+  loadBasket(): void {
+    this.localBasketService.load().then(
+      basket => this.basket = basket,
+      err => console.error('error on loading basket', err)
+    );
   }
 
   ngOnDestroy(): void {

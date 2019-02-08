@@ -23,6 +23,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { EffectsModule } from '@ngrx/effects';
 import { AppEffects } from './+state/effects/app.effects';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { MatSnackBarModule } from '@angular/material';
 
 
 @NgModule({
@@ -35,6 +37,7 @@ import { AppEffects } from './+state/effects/app.effects';
     FlightCancellingModule,
     DashboardModule,
     DashboardTileModule,
+    MatSnackBarModule,
     
     FlightApiModule.forRoot(),
     SharedModule.forRoot(),
@@ -42,6 +45,7 @@ import { AppEffects } from './+state/effects/app.effects';
     StoreModule.forRoot(reducers, { metaReducers }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     EffectsModule.forRoot([ AppEffects ]),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   declarations: [
     AppComponent,
